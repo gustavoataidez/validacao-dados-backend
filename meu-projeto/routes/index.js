@@ -1,13 +1,10 @@
-
 var express = require('express');
 var router = express.Router();
 
-/* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Formulário de Contato' });
 });
 
-// Lista de DDDs válidos no Brasil
 const validDDDs = [
   '11', '12', '13', '14', '15', '16', '17', '18', '19', // São Paulo
   '21', '22', '24', // Rio de Janeiro
@@ -38,19 +35,16 @@ const validDDDs = [
   '98', '99' // Maranhão
 ];
 
-// Função de validação de e-mail
 function isValidEmail(email) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
 
-// Função de validação de data
 function isValidDate(date) {
   const parsedDate = new Date(date);
   return !isNaN(parsedDate.getTime());
 }
 
-// Função para validação do formulário
 router.post('/submit', function (req, res) {
   const {
     nome,
@@ -66,32 +60,26 @@ router.post('/submit', function (req, res) {
     atividade = []
   } = req.body;
 
-  // Verificar se todos os campos obrigatórios estão preenchidos
   if (!nome || !data_nascimento || !nome_mae || !nome_pai || !ddd || !telefone || !email || !serie || !turno) {
     return res.status(400).send('Todos os campos obrigatórios devem ser preenchidos.');
   }
 
-  // Validar a data de nascimento
   if (!isValidDate(data_nascimento)) {
     return res.status(400).send('Data de nascimento inválida.');
   }
 
-  // Validar o e-mail
   if (!isValidEmail(email)) {
     return res.status(400).send('E-mail inválido. O e-mail deve conter "@" e "."');
   }
 
-  // Validar DDD
   if (!validDDDs.includes(ddd)) {
     return res.status(400).send('DDD inválido. Insira um DDD válido no Brasil.');
   }
 
-  // Validar o número de atividades extracurriculares (máximo de 3)
   if (atividade.length > 3) {
     return res.status(400).send('Você pode selecionar no máximo 3 atividades extracurriculares.');
   }
 
-  // Se tudo estiver válido, retornar página de sucesso
   res.send('<h1>Sucesso</h1>');
 });
 
